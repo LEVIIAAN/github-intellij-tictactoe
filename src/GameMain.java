@@ -8,7 +8,7 @@ import javax.swing.*;
 public class GameMain extends JPanel {
     private static final long serialVersionUID = 1L; // to prevent serializable warning
 
-    // Define named constants for the drawing graphics
+    // Define nam\ed constants for the drawing graphics
     public static final String TITLE = "Tic Tac Toe";
     public static final Color COLOR_BG = Color.WHITE;
     public static final Color COLOR_BG_STATUS = new Color(216, 216, 216);
@@ -21,6 +21,7 @@ public class GameMain extends JPanel {
     private State currentState;  // the current state of the game
     private Seed currentPlayer;  // the current player
     private JLabel statusBar;    // for displaying status message
+    private boolean isMuted = false;
 
     /** Constructor to setup the UI and game components */
     public GameMain() {
@@ -45,6 +46,11 @@ public class GameMain extends JPanel {
                     }
                 } else {        // game over
                     newGame();  // restart the game
+                }
+                if (currentState == State.PLAYING) {
+                    SoundEffect.EAT_FOOD.play();
+                } else {
+                    SoundEffect.DIE.play();
                 }
                 // Refresh the drawing canvas
                 repaint();  // Callback paintComponent().
