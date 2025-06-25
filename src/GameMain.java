@@ -10,9 +10,6 @@ public class GameMain extends JPanel {
     public static final String TITLE = "Tic Tac Toe";
     public static final Color COLOR_BG = new Color(34, 40, 49);
     public static final Color COLOR_BG_STATUS = new Color(48, 56, 65);
-    public static final Color COLOR_X = new Color(242, 95, 92);
-    public static final Color COLOR_O = new Color(118, 214, 186);
-    public static final Color GRID_COLOR = new Color(82, 87, 93);
     public static final Color TEXT_COLOR = new Color(234, 232, 232);
 
     public static final Font FONT_STATUS = new Font("Segoe UI", Font.BOLD, 16);
