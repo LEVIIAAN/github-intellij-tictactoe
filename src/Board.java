@@ -15,7 +15,51 @@ public class Board {
     public static final int Y_OFFSET = 1;  // Fine tune for better display
 
     // Define properties (package-visible)
-    /** Composes of 2D array of ROWS-by-COLS Cell instances */
+    /** Composes of 2D array opublic void draw(Graphics2D g2d, GradientPaint gradientX, GradientPaint gradientO,
+     State gameState, Seed currentPlayer, int hoverRow, int hoverCol) {
+
+     // Draw grid with rounded corners
+     g2d.setColor(GRID_COLOR);
+     g2d.setStroke(new BasicStroke(5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+     // Draw horizontal lines
+     for (int row = 1; row < ROWS; ++row) {
+     g2d.drawLine(20, row * SIZE, COLS * SIZE - 20, row * SIZE);
+     }
+
+     // Draw vertical lines
+     for (int col = 1; col < COLS; ++col) {
+     g2d.drawLine(col * SIZE, 20, col * SIZE, ROWS * SIZE - 20);
+     }
+
+     // Draw the seeds with improved styling
+     for (int row = 0; row < ROWS; ++row) {
+     for (int col = 0; col < COLS; ++col) {
+     int centerX = col * SIZE + SIZE / 2;
+     int centerY = row * SIZE + SIZE / 2;
+     int radius = SIZE / 3;
+
+     if (cells[row][col].content == Seed.CROSS) {
+     // Draw X with shadow effect
+     g2d.setPaint(gradientX);
+     g2d.setStroke(new BasicStroke(10f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+     // Main X
+     g2d.drawLine(centerX - radius, centerY - radius,
+     centerX + radius, centerY + radius);
+     g2d.drawLine(centerX + radius, centerY - radius,
+     centerX - radius, centerY + radius);
+
+     } else if (cells[row][col].content == Seed.NOUGHT) {
+     // Draw O with gradient
+     g2d.setPaint(gradientO);
+     g2d.setStroke(new BasicStroke(10f));
+     g2d.drawOval(centerX - radius, centerY - radius, radius*2, radius*2);
+     }
+     }
+     }
+     }
+     f ROWS-by-COLS Cell instances */
     Cell[][] cells;
 
     /** Constructor to initialize the game board */
