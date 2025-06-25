@@ -65,6 +65,15 @@ public class GameMain extends JPanel {
         scorePanel.add(labelScoreO);
         add(scorePanel, BorderLayout.EAST);
 
+        // Reset Score Button
+        JButton resetButton = new JButton("Reset Score");
+        resetButton.setFont(FONT_SCORE_LABEL);
+        resetButton.setForeground(TEXT_COLOR);
+        resetButton.setBackground(COLOR_BG_STATUS);
+        resetButton.addActionListener(e -> resetScore());
+        scorePanel.add(resetButton);
+
+
 
         // Mouse listener
         addMouseListener(new MouseAdapter() {
@@ -80,18 +89,18 @@ public class GameMain extends JPanel {
                     if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
                             && board.cells[row][col].content == Seed.NO_SEED) {
 
-                        SoundEffect.EAT_FOOD.play(); // Play sound when a move is made
+                        SoundEffect.EAT_FOOD.play(); // Play sound ketika jalan main
 
                         currentState = board.stepGame(currentPlayer, row, col);
 
                         if (currentState == State.CROSS_WON) {
                             scoreX++;
                             updateScore();
-                            SoundEffect.EXPLODE.play(); // Play win sound for X
+                            SoundEffect.EXPLODE.play();
                         } else if (currentState == State.NOUGHT_WON) {
                             scoreO++;
                             updateScore();
-                            SoundEffect.EXPLODE.play(); // Play win sound for O
+                            SoundEffect.EXPLODE.play();
                         }
 
                         if (currentState == State.PLAYING) {
@@ -131,6 +140,7 @@ public class GameMain extends JPanel {
     }
 
 
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame(TITLE);
@@ -143,14 +153,19 @@ public class GameMain extends JPanel {
         });
     }
 
+    private void resetScore() {
+        scoreX = 0;
+        scoreO = 0;
+        updateScore();  // Update scores
+    }
 
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        setBackground(COLOR_BG); // set its background color
+        setBackground(COLOR_BG);
 
-        board.paint(g);  // ask the game board to paint itself
+        board.paint(g);
 
         // Print status-bar message
         if (currentState == State.PLAYING) {
@@ -159,6 +174,7 @@ public class GameMain extends JPanel {
         } else if (currentState == State.DRAW) {
             statusBar.setForeground(Color.RED);
             statusBar.setText("It's a Draw! Click to play again.");
+            SoundEffect.DIE.play();
         } else if (currentState == State.CROSS_WON) {
             statusBar.setForeground(Color.RED);
             statusBar.setText("'X' Won! Click to play again.");

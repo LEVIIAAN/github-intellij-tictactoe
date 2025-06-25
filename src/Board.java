@@ -79,6 +79,8 @@ public class Board {
         }
     }
 
+
+
     /** Reset the game board, ready for new game */
     public void newGame() {
         for (int row = 0; row < ROWS; ++row) {
