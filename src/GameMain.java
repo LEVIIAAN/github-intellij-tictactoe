@@ -26,9 +26,6 @@ public class GameMain extends JPanel {
     private JPanel scorePanel;
     private JLabel labelScoreX, labelScoreO;
 
-    // Variabel untuk kontrol volume
-    private JSlider volumeSlider;
-    private JLabel volumeLabel;
 
     public GameMain() {
         // Inisialisasi sound effect
