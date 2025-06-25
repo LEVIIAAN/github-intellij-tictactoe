@@ -21,12 +21,12 @@ public enum SoundEffect {
             URL url = getClass().getClassLoader().getResource(soundFileName);
             if (url == null) {
                 System.err.println("File not found: " + soundFileName);
-                return; // Keluar jika file tidak ditemukan
+                return;
             }
 
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
             clip = AudioSystem.getClip();
-            clip.open(audioInputStream); // Pastikan clip dibuka
+            clip.open(audioInputStream);
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
@@ -36,14 +36,14 @@ public enum SoundEffect {
     public void play() {
         if (volume != Volume.MUTE) {
             if (clip.isRunning())
-                clip.stop();   // Stop the player if it is still running
-            clip.setFramePosition(0); // rewind to the beginning
-            clip.start();     // Start playing
+                clip.stop();
+            clip.setFramePosition(0);
+            clip.start();
         }
     }
 
     static void initGame() {
-        values(); // calls the constructor for all the elements
+        values();
     }
 
 
