@@ -46,8 +46,5 @@ public enum SoundEffect {
         values(); // calls the constructor for all the elements
     }
 
-    public Clip getClip() {
-        return clip; // Getter untuk clip
-    }
 
 }
