@@ -28,8 +28,6 @@ public class GameMain extends JPanel {
 
 
     public GameMain() {
-        // Inisialisasi sound effect
-        SoundEffect.initGame();
 
         setLayout(new BorderLayout());
         setBackground(COLOR_BG);
