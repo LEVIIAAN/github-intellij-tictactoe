@@ -1,23 +1,11 @@
-import java.io.IOException;
+import javax.sound.sampled.*;
 import java.net.URL;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
+
 /**
  * This enum encapsulates all the sound effects of a game, so as to separate the sound playing
  * codes from the game codes.
- * 1. Define all your sound effect names and the associated wave file.
- * 2. To play a specific sound, simply invoke SoundEffect.SOUND_NAME.play().
- * 3. You might optionally invoke the static method SoundEffect.initGame() to pre-load all the
- *    sound files, so that the play is not paused while loading the file for the first time.
- * 4. You can the static variable SoundEffect.volume to SoundEffect.Volume.MUTE
- *    to mute the sound.
- *
- * For Eclipse, place the audio file under "src", which will be copied into "bin".
  */
-
 public enum SoundEffect {
     EAT_FOOD("audio/eatfood.wav"),
     EXPLODE("audio/explode.wav"),
@@ -36,28 +24,19 @@ public enum SoundEffect {
     /** Private Constructor to construct each element of the enum with its own sound file. */
     private SoundEffect(String soundFileName) {
         try {
-                URL url = getClass().getClassLoader().getResource(soundFileName);
-                if (url == null) {
-                    System.err.println("File not found: " + soundFileName);
-                    return; // Keluar jika file tidak ditemukan
-                }
+            URL url = getClass().getClassLoader().getResource(soundFileName);
+            if (url == null) {
+                System.err.println("File not found: " + soundFileName);
+                return; // Keluar jika file tidak ditemukan
+            }
 
-                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
-                clip = AudioSystem.getClip();
-        } catch (UnsupportedAudioFileException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
-            System.err.println("Failed to load sound: " + soundFileName);
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
+            clip = AudioSystem.getClip();
+            clip.open(audioInputStream); // Pastikan clip dibuka
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
     }
-
-
 
     /** Play or Re-play the sound effect from the beginning, by rewinding. */
     public void play() {
@@ -72,5 +51,9 @@ public enum SoundEffect {
     /** Optional static method to pre-load all the sound files. */
     static void initGame() {
         values(); // calls the constructor for all the elements
+    }
+
+    public Clip getClip() {
+        return clip; // Getter untuk clip
     }
 }

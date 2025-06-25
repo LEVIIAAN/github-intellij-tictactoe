@@ -1,15 +1,23 @@
+import javax.sound.sampled.FloatControl;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
+import java.io.IOException;
 
 public class GameMain extends JPanel {
     private static final long serialVersionUID = 1L;
 
     public static final String TITLE = "Tic Tac Toe";
-    public static final Color COLOR_BG = new Color(240, 240, 240);
-    public static final Color COLOR_BG_STATUS = new Color(200, 200, 200);
-    public static final Font FONT_STATUS = new Font("Arial", Font.PLAIN, 16);
-    public static final Font FONT_SCORE = new Font("Arial", Font.BOLD, 24);
+    public static final Color COLOR_BG = new Color(34, 40, 49);
+    public static final Color COLOR_BG_STATUS = new Color(48, 56, 65);
+    public static final Color COLOR_X = new Color(242, 95, 92);
+    public static final Color COLOR_O = new Color(118, 214, 186);
+    public static final Color GRID_COLOR = new Color(82, 87, 93);
+    public static final Color TEXT_COLOR = new Color(234, 232, 232);
+
+    public static final Font FONT_STATUS = new Font("Segoe UI", Font.BOLD, 16);
+    public static final Font FONT_SCORE = new Font("Segoe UI", Font.BOLD, 26);
+    public static final Font FONT_SCORE_LABEL = new Font("Segoe UI", Font.PLAIN, 14);
 
     private Board board;
     private State currentState;
@@ -18,13 +26,47 @@ public class GameMain extends JPanel {
 
     private int scoreX = 0;
     private int scoreO = 0;
-    private JLabel labelScoreX;
-    private JLabel labelScoreO;
+    private JPanel scorePanel;
+    private JLabel labelScoreX, labelScoreO;
+
+    // Variabel untuk kontrol volume
+    private JSlider volumeSlider;
+    private JLabel volumeLabel;
 
     public GameMain() {
-        setLayout(new BorderLayout());
+        // Inisialisasi sound effect
         SoundEffect.initGame();
-        // Mouse input
+
+        setLayout(new BorderLayout());
+        setBackground(COLOR_BG);
+
+        // Status bar
+        statusBar = new JLabel("", SwingConstants.CENTER);
+        statusBar.setFont(FONT_STATUS);
+        statusBar.setForeground(TEXT_COLOR);
+        statusBar.setBackground(COLOR_BG_STATUS);
+        statusBar.setOpaque(true);
+        add(statusBar, BorderLayout.SOUTH);
+
+        // Scoreboard
+        scorePanel = new JPanel();
+        scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
+        scorePanel.setBackground(new Color(44, 52, 60));
+        scorePanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+
+        labelScoreX = new JLabel("X: 0", SwingConstants.CENTER);
+        labelScoreX.setFont(FONT_SCORE);
+        labelScoreX.setForeground(TEXT_COLOR);
+        labelScoreO = new JLabel("O: 0", SwingConstants.CENTER);
+        labelScoreO.setFont(FONT_SCORE);
+        labelScoreO.setForeground(TEXT_COLOR);
+
+        scorePanel.add(labelScoreX);
+        scorePanel.add(labelScoreO);
+        add(scorePanel, BorderLayout.EAST);
+
+
+        // Mouse listener
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -37,77 +79,37 @@ public class GameMain extends JPanel {
                 if (currentState == State.PLAYING) {
                     if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
                             && board.cells[row][col].content == Seed.NO_SEED) {
+
+                        SoundEffect.EAT_FOOD.play(); // Play sound when a move is made
+
                         currentState = board.stepGame(currentPlayer, row, col);
 
                         if (currentState == State.CROSS_WON) {
                             scoreX++;
                             updateScore();
+                            SoundEffect.EXPLODE.play(); // Play win sound for X
                         } else if (currentState == State.NOUGHT_WON) {
                             scoreO++;
                             updateScore();
+                            SoundEffect.EXPLODE.play(); // Play win sound for O
                         }
 
                         if (currentState == State.PLAYING) {
                             currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
-
                         }
                     }
                 } else {
                     newGame();
                 }
-
                 repaint();
             }
         });
 
-        // Status bar
-        statusBar = new JLabel();
-        statusBar.setFont(FONT_STATUS);
-        statusBar.setOpaque(true);
-        statusBar.setBackground(COLOR_BG_STATUS);
-        statusBar.setPreferredSize(new Dimension(300, 30));
-        statusBar.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        add(statusBar, BorderLayout.SOUTH);
-
-        // Scoreboard
-        JPanel scorePanel = new JPanel();
-        scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
-        scorePanel.setBackground(new Color(255, 255, 255));
-        scorePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        labelScoreX = new JLabel("X: 0");
-        labelScoreO = new JLabel("O: 0");
-        labelScoreX.setFont(FONT_SCORE);
-        labelScoreO.setFont(FONT_SCORE);
-        labelScoreX.setAlignmentX(Component.CENTER_ALIGNMENT);
-        labelScoreO.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JButton resetButton = new JButton("Reset Score");
-        resetButton.setFont(FONT_STATUS);
-        resetButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        resetButton.setBackground(new Color(100, 149, 237));
-        resetButton.setForeground(Color.WHITE);
-        resetButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        resetButton.addActionListener(e -> {
-            scoreX = 0;
-            scoreO = 0;
-            updateScore();
-        });
-
-        scorePanel.add(labelScoreX);
-        scorePanel.add(Box.createVerticalStrut(10));
-        scorePanel.add(labelScoreO);
-        scorePanel.add(Box.createVerticalStrut(20));
-        scorePanel.add(resetButton);
-
-        add(scorePanel, BorderLayout.EAST);
-
-        setPreferredSize(new Dimension(Board.CANVAS_WIDTH + 160, Board.CANVAS_HEIGHT + 30));
-        setBorder(BorderFactory.createLineBorder(COLOR_BG_STATUS, 2, false));
-
+        setPreferredSize(new Dimension(Board.CANVAS_WIDTH + 200, Board.CANVAS_HEIGHT + 60));
         initGame();
         newGame();
     }
+
 
     private void updateScore() {
         labelScoreX.setText("X: " + scoreX);
@@ -128,12 +130,29 @@ public class GameMain extends JPanel {
         currentState = State.PLAYING;
     }
 
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame(TITLE);
+            frame.setContentPane(new GameMain());
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.pack();
+            frame.setResizable(false);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        });
+    }
+
+
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        setBackground(COLOR_BG);
-        board.paint(g);
+        setBackground(COLOR_BG); // set its background color
 
+        board.paint(g);  // ask the game board to paint itself
+
+        // Print status-bar message
         if (currentState == State.PLAYING) {
             statusBar.setForeground(Color.BLACK);
             statusBar.setText((currentPlayer == Seed.CROSS) ? "X's Turn" : "O's Turn");
@@ -148,15 +167,5 @@ public class GameMain extends JPanel {
             statusBar.setText("'O' Won! Click to play again.");
         }
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame(TITLE);
-            frame.setContentPane(new GameMain());
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
-    }
 }
+
